@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Calculator by Tukky</title>
+	
+	<style>
+		.calculator {
+			width: 200px;
+			height: 360px;
+			box-shadow: 10px 10px 8px lightblue, 8px 8px 8px lightblue;
+			border: solid 2px blue;
+			border-radius: 10px;
+			background: #EEE9BF;
+		}
+		.brand {
+			font-family: arial;
+			font-weight: bold;
+			text-align: center;
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
+		.board {
+			//margin-top: 20px;
+		}
+		.button {
+			width: 42px;
+			height: 35px;
+			background: lightgray;
+			font-family: arial;
+			font-weight: bold;
+			font-size: 20px;
+			text-align: center;
+			line-height: 35px;
+			text-shadow: 1px 1px 1px gray;
+			cursor: pointer;
+			border: 1px solid black;
+			border-right: 2px solid black;
+			border-bottom: 2px solid black;
+			border-radius: 5px;
+		}
+		.display {
+			width: 90%;
+			height: 35px;
+			margin: 5px;
+			font-family: arial;
+			font-weight: bold;
+			font-size: 20px;
+			color: black;
+			background: #F8F8FF;
+			border: 1px solid black;
+			border-right: 2px solid black;
+			border-bottom: 2px solid black;
+			border-radius: 3px;
+			text-align: right;
+		}
+		#equal {
+			background: pink;
+		}
+		.controls {
+			margin-top: 13px;
+		}
+		.control_button {
+			width: 42px;
+			height: 35px;
+			font-weight: bold;
+			text-shadow: 1px 1px 1px gray;
+			margin: 2px;
+			border-radius: 25px;
+			cursor: pointer;
+		}
+		#power {
+			background: #EE3B3B;
+			color: white;
+		}
+		#delete {
+			background: lightgreen;
+		}
+	</style>
+</head>
+
+<body>
+	
+	<div class="calculator">
+	
+		
+		<div class="brand">Tukky</div>
+		<input id="calculation" class="display" type="text" readonly/>
+		<input id="result" class="display" type="text" readonly/>
+		
+		 
+		<div class="controls">
+			<button id="power" class="control_button">ON</button> 
+			<button id="delete" class="control_button">AC</button>
+		</div>
+		
+		<table class="board">
+			<thead>
+				
+			</thead>
+			
+			
+			<tbody>
+				<tr>
+					<td> <div class="button" id="bay">7</div> </td>
+					<td> <div class="button">8</div> </td>
+					<td> <div class="button">9</div> </td>
+					<td> <div class="button">/</div> </td>
+				</tr>
+				<tr>
+					<td> <div class="button">4</div> </td>
+					<td> <div class="button">5</div> </td>
+					<td> <div class="button">6</div> </td>
+					<td> <div class="button">*</div> </td>
+				</tr>
+				<tr>
+					<td> <div class="button">1</div> </td>
+					<td> <div class="button">2</div> </td>
+					<td> <div class="button">3</div> </td>
+					<td> <div class="button">-</div> </td>
+				</tr>
+				<tr>
+					<td> <div class="button">0</div> </td>
+					<td> <div class="button">.</div> </td>
+					<td> <div id="equal" class="button">=</div> </td>
+					<td> <div class="button">+</div> </td>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		
+	</div>
+	
+	<script>
+		var num1 = 0, num2 = 0, ope = "", clr = false, on = false, sign = true;
+		
+		var btn = document.getElementsByClassName("button"),
+		cal = document.getElementById("calculation"),
+		res = document.getElementById("result"),
+		del = document.getElementById("delete"),
+		power = document.getElementById("power");
+		
+		//Gán sự kiện cho phím Power
+		power.onclick = function (){
+			if(on) {
+				cal.placeholder = "";
+				res.placeholder = "";
+				cal.value = "";
+				res.value = "";
+			} else {
+				cal.placeholder = "0";
+				res.placeholder = "0";
+				cal.value = "";
+				res.value = "";
+			}
+			on = !on;
+		}
+		
+		//Gán sự kiện cho phím Deltele
+		del.onclick = function (){
+			if (!on) return;
+			cal.value = "";
+			res.value = "";
+		};
+		
+		//Gán sự kiện nhập dữ liệu cho các phím số
+		for(let i = 0; i < btn.length; i++){
+			if ( (i+1) % 4 != 0 && i != 14) btn[i].onclick = function (){
+				if (!on) return; 
+				if (clr){
+					cal.value = "";
+					res.value = "";
+					clr = false;
+				}
+				cal.value += btn[i].innerHTML;
+			}
+		}
+		
+		//Gán sự kiện cho các phép toán +, -, *, /
+		for(let i = 0; i < 4; i++){
+			btn[4*i+3].onclick = function (){
+				if (!sign) return;
+				if (!on) return; 
+				
+				if (clr) {
+					num1 = result(ope);
+					cal.value = num1 + " " + btn[4*i+3].innerHTML + " ";
+					ope = btn[4*i+3].innerHTML;
+					clr = false;
+					return;
+				}
+				
+				if (cal.value != ""){
+					num1 = cal.value;
+					cal.value += " " + btn[4*i+3].innerHTML + " ";
+				} else {
+					num1 = 0;
+					cal.value += "0 " + btn[4*i+3].innerHTML + " ";
+				}
+				ope = btn[4*i+3].innerHTML;
+				sign = false;
+			}
+		}
+		
+		//Hàm xử lí kết quả
+		function result(operation){
+			num1 = Number(num1);
+			num2 = Number(num2);
+			let res = 0;
+			switch (operation){
+				case "+" : {
+					res = num1 + num2;
+					break;
+				}
+				case "-" : {
+					res = num1 - num2;
+					break;
+				}
+				case "*" : {
+					res = num1 * num2;
+					break;
+				}
+				case "/" : {
+					res = num1 / num2;
+					break;
+				}
+			}
+			return res.toFixed(9);
+		}
+		
+		//Gán sự kiện cho phím =
+		btn[14].onclick = function (){
+			if (!on) return; 
+			let len1 = (String)(num1).length;
+			num2 = cal.value.substr(len1 + 3, cal.value.length - len1 - 3);
+			if(num1 != "" && num2 != ""){
+				res.value = result(ope);
+				clr = true;
+			}
+			sign = true;
+		}
+	</script>
+</body>
+</html>
